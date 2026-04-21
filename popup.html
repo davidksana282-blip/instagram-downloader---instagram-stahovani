@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>IG Downloader</title>
+    <link rel="stylesheet" href="popup.css" />
+  </head>
+  <body>
+    <main>
+      <h1 id="title"></h1>
+      <p class="hint" id="hint"></p>
+
+      <label for="username" id="usernameLabel"></label>
+      <div class="row">
+        <input id="username" />
+        <button id="fillFromTab" type="button"></button>
+      </div>
+
+      <fieldset>
+        <legend id="downloadWhatLegend"></legend>
+        <label><input type="checkbox" id="posts" checked /> <span id="postsLabel"></span></label>
+        <label><input type="checkbox" id="stories" checked /> <span id="storiesLabel"></span></label>
+        <label><input type="checkbox" id="highlights" checked /> <span id="highlightsLabel"></span></label>
+      </fieldset>
+
+      <label for="maxItems" id="maxItemsLabel"></label>
+      <input id="maxItems" type="number" min="0" value="0" />
+
+      <label for="baseFolder" id="baseFolderLabel"></label>
+      <input id="baseFolder" value="instagram" />
+
+      <button id="downloadBtn" class="primary" type="button"></button>
+      <pre id="log" aria-live="polite"></pre>
+    </main>
+    <script src="popup.js" type="module"></script>
+  </body>
+</html>
