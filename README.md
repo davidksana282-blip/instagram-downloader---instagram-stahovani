@@ -17,6 +17,7 @@ Built as a practical downloader with automatic file saving and language-aware UI
 
 ### 🔥 Key Features
 - ✅ Full profile media flow (posts, stories, highlights)
+- 🧩 In-page button on Instagram profile that opens downloader popup with prefilled username
 - 🛟 Highlights fallback chain (profile info -> tray endpoints -> DOM fallback from open profile tab)
 - 💾 Automatic saving (`saveAs: false`)
 - 📁 Custom base folder inside your Downloads
@@ -62,6 +63,16 @@ Downloaded files are organized like:
 - If Chrome still asks where to save each file, disable:
   - `Chrome > Settings > Downloads > Ask where to save each file before downloading`
 
+### 🔄 Semi-Auto Updates (GitHub)
+This project supports update checks against GitHub Releases (manual install flow):
+1. In `background.js` set:
+   - `UPDATE_REPO_OWNER`
+   - `UPDATE_REPO_NAME`
+2. Keep extension `manifest.json` version updated (for example `0.1.0`).
+3. Create GitHub releases with tags like `v0.1.1`, `v0.2.0`.
+4. In popup, click `Check updates`.
+5. If update is found, click `Open update` and reinstall/reload unpacked extension manually.
+
 ### 🩺 Troubleshooting
 - **Highlights = 0**:
   - Open target profile tab (`https://www.instagram.com/<username>/`) and keep it loaded.
@@ -90,6 +101,7 @@ Je to prakticky downloader s automatickym ukladanim souboru a lokalizovanym UI/l
 
 ### 🔥 Hlavni Funkce
 - ✅ Kompletni tok pro profilova media (prispevky, stories, highlights)
+- 🧩 Tlacitko primo na Instagram profilu, ktere otevre downloader popup s predvyplnenym username
 - 🛟 Fallback retezec pro highlights (profile info -> tray endpointy -> DOM fallback z otevreneho tabu)
 - 💾 Automaticke ukladani (`saveAs: false`)
 - 📁 Vlastni cilova slozka v Downloads
@@ -134,6 +146,16 @@ Soubory se ukladaji takto:
 - Stahuje jen obsah, ke kteremu ma tvuj prihlaseny ucet pristup.
 - Pokud se i tak otevira dialog pro ulozeni, vypni:
   - `Chrome > Settings > Downloads > Ask where to save each file before downloading`
+
+### 🔄 Semi-Auto Aktualizace (GitHub)
+Projekt umi kontrolovat aktualizace podle GitHub Releases (instalace je rucni):
+1. V `background.js` nastav:
+   - `UPDATE_REPO_OWNER`
+   - `UPDATE_REPO_NAME`
+2. Udrzuj verzi extension v `manifest.json` (napr. `0.1.0`).
+3. Vytvarej GitHub release tagy jako `v0.1.1`, `v0.2.0`.
+4. V popupu klikni `Zkontrolovat update`.
+5. Kdyz je update dostupny, klikni `Otevrit update` a extension rucne reinstaluj/reloadni.
 
 ### 🩺 Troubleshooting
 - **Highlights = 0**:

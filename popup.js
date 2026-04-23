@@ -6,7 +6,10 @@ const maxItemsInput = document.getElementById("maxItems");
 const baseFolderInput = document.getElementById("baseFolder");
 const fillFromTabBtn = document.getElementById("fillFromTab");
 const downloadBtn = document.getElementById("downloadBtn");
+const checkUpdatesBtn = document.getElementById("checkUpdatesBtn");
+const openUpdateBtn = document.getElementById("openUpdateBtn");
 const logEl = document.getElementById("log");
+let latestUpdateUrl = "";
 
 function t(key, substitutions) {
   return chrome.i18n.getMessage(key, substitutions) || key;
@@ -25,7 +28,22 @@ function localizeUi() {
   document.getElementById("highlightsLabel").textContent = t("highlightsLabel");
   document.getElementById("maxItemsLabel").textContent = t("maxItemsLabel");
   document.getElementById("baseFolderLabel").textContent = t("baseFolderLabel");
+  document.getElementById("updatesLegend").textContent = t("updatesLegend");
+  checkUpdatesBtn.textContent = t("checkUpdatesButton");
+  openUpdateBtn.textContent = t("openUpdateButton");
   downloadBtn.textContent = t("downloadButton");
+}
+
+function prefillFromQuery() {
+  try {
+    const url = new URL(window.location.href);
+    const queryUsername = (url.searchParams.get("username") || "").trim().replace(/^@/, "");
+    if (queryUsername) {
+      usernameInput.value = queryUsername;
+    }
+  } catch {
+    // Ignore malformed URL.
+  }
 }
 
 function log(line) {
@@ -107,4 +125,39 @@ downloadBtn.addEventListener("click", async () => {
   }
 });
 
+checkUpdatesBtn.addEventListener("click", async () => {
+  checkUpdatesBtn.disabled = true;
+  openUpdateBtn.disabled = true;
+  latestUpdateUrl = "";
+  log(t("logCheckingUpdates"));
+
+  try {
+    const resp = await chrome.runtime.sendMessage({ type: "checkForUpdates" });
+    if (!resp?.ok) {
+      throw new Error(resp?.error || "Unknown error");
+    }
+
+    if (resp.updateAvailable) {
+      latestUpdateUrl = resp.updateUrl || "";
+      openUpdateBtn.disabled = !latestUpdateUrl;
+      log(t("logUpdateAvailable", [resp.latestVersion, resp.currentVersion]));
+    } else {
+      log(t("logNoUpdate", resp.currentVersion || ""));
+    }
+  } catch (err) {
+    log(t("logUpdateCheckFailed", err.message || String(err)));
+  } finally {
+    checkUpdatesBtn.disabled = false;
+  }
+});
+
+openUpdateBtn.addEventListener("click", async () => {
+  if (!latestUpdateUrl) {
+    log(t("logUpdateUrlMissing"));
+    return;
+  }
+  await chrome.tabs.create({ url: latestUpdateUrl });
+});
+
 localizeUi();
+prefillFromQuery();

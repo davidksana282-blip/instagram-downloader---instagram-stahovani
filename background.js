@@ -1,4 +1,6 @@
 const IG_APP_ID = "936619743392459";
+const UPDATE_REPO_OWNER = "davidksana282-blip";
+const UPDATE_REPO_NAME = "instagram-downloader---instagram-stahovani";
 
 function t(key, substitutions) {
   return chrome.i18n.getMessage(key, substitutions) || key;
@@ -13,6 +15,52 @@ function safeName(input) {
     .replace(/[\\/:*?"<>|]+/g, "_")
     .replace(/\s+/g, " ")
     .trim();
+}
+
+function compareVersions(a, b) {
+  const pa = String(a || "").replace(/^v/i, "").split(".").map((x) => Number.parseInt(x, 10) || 0);
+  const pb = String(b || "").replace(/^v/i, "").split(".").map((x) => Number.parseInt(x, 10) || 0);
+  const len = Math.max(pa.length, pb.length);
+  for (let i = 0; i < len; i += 1) {
+    const av = pa[i] || 0;
+    const bv = pb[i] || 0;
+    if (av > bv) return 1;
+    if (av < bv) return -1;
+  }
+  return 0;
+}
+
+async function checkGithubUpdate() {
+  if (!UPDATE_REPO_OWNER || !UPDATE_REPO_NAME) {
+    throw new Error(t("errUpdateRepoNotConfigured"));
+  }
+
+  const url = `https://api.github.com/repos/${encodeURIComponent(UPDATE_REPO_OWNER)}/${encodeURIComponent(UPDATE_REPO_NAME)}/releases/latest`;
+  const resp = await fetch(url, {
+    method: "GET",
+    headers: {
+      Accept: "application/vnd.github+json"
+    }
+  });
+
+  if (!resp.ok) {
+    throw new Error(t("errUpdateHttp", String(resp.status)));
+  }
+
+  const json = await resp.json();
+  const latestVersion = String(json?.tag_name || "").replace(/^v/i, "");
+  if (!latestVersion) {
+    throw new Error(t("errUpdateNoTagName"));
+  }
+
+  const currentVersion = String(chrome.runtime.getManifest().version || "").replace(/^v/i, "");
+  const updateAvailable = compareVersions(latestVersion, currentVersion) > 0;
+  return {
+    updateAvailable,
+    currentVersion,
+    latestVersion,
+    updateUrl: json?.html_url || `https://github.com/${UPDATE_REPO_OWNER}/${UPDATE_REPO_NAME}/releases`
+  };
 }
 
 async function igFetchJson(url) {
@@ -326,6 +374,37 @@ async function runProfileDownload(options) {
 }
 
 chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
+  if (msg?.type === "openDownloaderPopup") {
+    (async () => {
+      try {
+        const username = String(msg?.payload?.username || "").replace(/^@/, "").trim();
+        const url = chrome.runtime.getURL(`popup.html${username ? `?username=${encodeURIComponent(username)}` : ""}`);
+        await chrome.windows.create({
+          url,
+          type: "popup",
+          width: 420,
+          height: 760
+        });
+        sendResponse({ ok: true });
+      } catch (err) {
+        sendResponse({ ok: false, error: err.message || String(err) });
+      }
+    })();
+    return true;
+  }
+
+  if (msg?.type === "checkForUpdates") {
+    (async () => {
+      try {
+        const result = await checkGithubUpdate();
+        sendResponse({ ok: true, ...result });
+      } catch (err) {
+        sendResponse({ ok: false, error: err.message || String(err) });
+      }
+    })();
+    return true;
+  }
+
   if (msg?.type !== "downloadProfile") return false;
 
   (async () => {
