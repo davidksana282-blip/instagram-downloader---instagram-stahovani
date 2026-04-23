@@ -65,13 +65,8 @@ Downloaded files are organized like:
 
 ### 🔄 Semi-Auto Updates (GitHub)
 This project supports update checks against GitHub Releases (manual install flow):
-1. In `background.js` set:
-   - `UPDATE_REPO_OWNER`
-   - `UPDATE_REPO_NAME`
-2. Keep extension `manifest.json` version updated (for example `0.1.0`).
-3. Create GitHub releases with tags like `v0.1.1`, `v0.2.0`.
-4. In popup, click `Check updates`.
-5. If update is found, click `Open update` and reinstall/reload unpacked extension manually.
+In popup, click `Check updates`.
+If update is found, click `Open update` and reinstall/reload unpacked extension manually.
 
 ### 🩺 Troubleshooting
 - **Highlights = 0**:
@@ -149,13 +144,8 @@ Soubory se ukladaji takto:
 
 ### 🔄 Semi-Auto Aktualizace (GitHub)
 Projekt umi kontrolovat aktualizace podle GitHub Releases (instalace je rucni):
-1. V `background.js` nastav:
-   - `UPDATE_REPO_OWNER`
-   - `UPDATE_REPO_NAME`
-2. Udrzuj verzi extension v `manifest.json` (napr. `0.1.0`).
-3. Vytvarej GitHub release tagy jako `v0.1.1`, `v0.2.0`.
-4. V popupu klikni `Zkontrolovat update`.
-5. Kdyz je update dostupny, klikni `Otevrit update` a extension rucne reinstaluj/reloadni.
+V popupu klikni `Zkontrolovat update`.
+Kdyz je update dostupny, klikni `Otevrit update` a extension rucne reinstaluj/reloadni.
 
 ### 🩺 Troubleshooting
 - **Highlights = 0**:
